@@ -141,15 +141,33 @@ export default function LoginPage({ onLogin }) {
           </form>
 
           {/* Quick Demo Credentials Helper */}
-          <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Default Seed Credentials:</span>
+          <div className="mt-6 pt-6 border-t border-slate-100 space-y-3 text-xs text-slate-500">
+            <div className="flex items-center justify-between">
+              <span>Default Admin Seed:</span>
+              <button
+                type="button"
+                onClick={handleQuickDemo}
+                className="text-black font-semibold hover:underline cursor-pointer flex items-center gap-1"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                admin@shopco.com
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={handleQuickDemo}
-              className="text-black font-semibold hover:underline cursor-pointer flex items-center gap-1"
+              onClick={() => {
+                onLogin({
+                  id: 'demo-admin',
+                  name: 'ShopCo Admin (Local)',
+                  email: 'admin@shopco.com',
+                  role: 'Admin',
+                  avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
+                });
+              }}
+              className="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              admin@shopco.com
+              <span>Instant Preview Mode (Bypass Auth)</span>
             </button>
           </div>
         </div>

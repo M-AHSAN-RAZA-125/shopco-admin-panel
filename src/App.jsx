@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi, getAdminToken, removeAdminToken } from './api/adminApi';
+import { initialProducts, initialOrders, initialUsers } from './data/mockData.js';
 import LoginPage from './components/LoginPage.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Header from './components/Header.jsx';
@@ -14,10 +15,10 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [authChecking, setAuthChecking] = useState(true);
 
-  // Global State for e-commerce entities
-  const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [users, setUsers] = useState([]);
+  // Global State for e-commerce entities (starts with defaults for graceful fallback)
+  const [products, setProducts] = useState(initialProducts);
+  const [orders, setOrders] = useState(initialOrders);
+  const [users, setUsers] = useState(initialUsers);
   const [stats, setStats] = useState(null);
   const [loadingData, setLoadingData] = useState(false);
 
@@ -48,16 +49,16 @@ export default function App() {
         adminApi.getStats(),
       ]);
 
-      if (prodRes.status === 'fulfilled' && prodRes.value.products) {
+      if (prodRes.status === 'fulfilled' && prodRes.value?.products?.length) {
         setProducts(prodRes.value.products);
       }
-      if (ordRes.status === 'fulfilled' && ordRes.value.orders) {
+      if (ordRes.status === 'fulfilled' && ordRes.value?.orders?.length) {
         setOrders(ordRes.value.orders);
       }
-      if (usrRes.status === 'fulfilled' && usrRes.value.users) {
+      if (usrRes.status === 'fulfilled' && usrRes.value?.users?.length) {
         setUsers(usrRes.value.users);
       }
-      if (statsRes.status === 'fulfilled' && statsRes.value.stats) {
+      if (statsRes.status === 'fulfilled' && statsRes.value?.stats) {
         setStats(statsRes.value.stats);
       }
     } catch (err) {

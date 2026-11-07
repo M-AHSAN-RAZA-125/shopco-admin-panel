@@ -59,10 +59,17 @@ export async function apiRequest(endpoint, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (netErr) {
+    throw new Error(
+      `Backend Server offline! Please start backend on http://localhost:5000 (run "npm start" in the backend folder).`
+    );
+  }
 
   const data = await response.json().catch(() => ({}));
 
