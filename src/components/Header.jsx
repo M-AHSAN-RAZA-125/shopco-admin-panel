@@ -173,14 +173,14 @@ export default function Header({
         {/* User Profile Badge */}
         <div className="flex items-center gap-2.5 pl-2 sm:border-l border-slate-200">
           <img
-            src={currentUser?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'}
-            alt={currentUser?.name}
+            src={currentUser?.avatar || '/ahsan-raza.jpg'}
+            alt={currentUser?.name || 'M AHSAN RAZA'}
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-slate-200 ring-2 ring-slate-100"
           />
           <div className="hidden sm:block text-left">
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-slate-800 block truncate max-w-[110px]">
-                {currentUser?.name || 'Logged User'}
+              <span className="text-xs font-bold text-slate-800 block truncate max-w-[120px]">
+                {currentUser?.name || 'M AHSAN RAZA'}
               </span>
               <span
                 className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${

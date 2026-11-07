@@ -82,11 +82,10 @@ export default function App() {
         if (res.success && res.user && res.user.role === 'admin') {
           setCurrentUser({
             id: res.user.id || res.user._id,
-            name: res.user.name,
+            name: res.user.name || 'M AHSAN RAZA',
             email: res.user.email,
             role: 'Admin',
-            avatar:
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
+            avatar: '/ahsan-raza.jpg',
           });
         } else {
           removeAdminToken();

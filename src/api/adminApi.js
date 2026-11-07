@@ -47,6 +47,21 @@ export const removeAdminToken = () => {
   }
 };
 
+export const getAdminImageUrl = (image) => {
+  const imagePath = typeof image === "string" ? image : image?.url || image?.path;
+  if (!imagePath) return "https://placehold.co/80";
+  if (imagePath.startsWith("data:") || imagePath.startsWith("blob:")) return imagePath;
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
+
+  try {
+    const apiOrigin = new URL(API_BASE_URL, window.location.origin).origin;
+    const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
+    return `${apiOrigin}${cleanPath}`;
+  } catch {
+    return imagePath;
+  }
+};
+
 export async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
   const headers = {
@@ -104,6 +119,14 @@ export const adminApi = {
   // Stats / Dashboard
   async getStats() {
     return await apiRequest("/admin/stats");
+  },
+
+  // Upload Image
+  async uploadImage(imageData, filename = "image.png") {
+    return await apiRequest("/upload", {
+      method: "POST",
+      body: JSON.stringify({ image: imageData, name: filename }),
+    });
   },
 
   // Products

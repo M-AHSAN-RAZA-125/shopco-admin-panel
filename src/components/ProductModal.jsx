@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Image as ImageIcon, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Image as ImageIcon, AlertCircle, Loader2, Upload } from 'lucide-react';
+import { adminApi, getAdminImageUrl } from '../api/adminApi';
 
 const CATEGORIES = ["T-shirts", "Shirts", "Shorts", "Jeans", "Hoodie", "Casual", "Formal", "Party", "Gym"];
 const AVAILABLE_SIZES = ["Small", "Medium", "Large", "X-Large"];
@@ -18,6 +19,43 @@ export default function ProductModal({ isOpen, onClose, onSave, productToEdit, l
   const [selectedSizes, setSelectedSizes] = useState(['Small', 'Medium', 'Large', 'X-Large']);
   const [selectedColors, setSelectedColors] = useState(['Black', 'Navy']);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file (PNG, JPG, WEBP, etc.).');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image file size must be less than 10MB.');
+      return;
+    }
+
+    setError('');
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Data = reader.result;
+      setImage(base64Data);
+
+      try {
+        setUploading(true);
+        const res = await adminApi.uploadImage(base64Data, file.name);
+        if (res && res.success && res.url) {
+          setImage(res.url);
+        }
+      } catch (uploadErr) {
+        // Fallback to base64 if backend upload fails
+        console.warn('Backend upload endpoint offline, using base64 image data');
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     if (productToEdit) {
@@ -210,27 +248,73 @@ export default function ProductModal({ isOpen, onClose, onSave, productToEdit, l
               />
             </div>
 
-            {/* Image URL */}
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Image URL (Cloudinary or Web URL) *
+            {/* Product Image Upload & URL */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Product Image *
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="https://... or /images/product.png"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-black"
-                  required
-                />
-                {image && (
-                  <img
-                    src={image}
-                    alt="Preview"
-                    className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0"
-                    onError={(e) => (e.target.style.display = 'none')}
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <label className="flex items-center justify-center gap-2 px-4 py-2.5 bg-black hover:bg-slate-800 text-white text-xs font-semibold rounded-lg cursor-pointer transition-colors shadow-sm">
+                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    <span>{uploading ? 'Processing Image...' : '📁 Choose Image from PC'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                  <span className="text-xs text-slate-400 font-medium text-center sm:text-left">
+                    OR paste direct image link below:
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="https://... (direct image link ending with .jpg, .png, etc.) or /images/..."
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:outline-hidden focus:ring-2 focus:ring-black"
+                    required
                   />
+                  {image && (
+                    <button
+                      type="button"
+                      onClick={() => setImage('')}
+                      className="px-2.5 py-2 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Real-time Preview */}
+                {image && (
+                  <div className="flex items-center gap-3 pt-2 border-t border-slate-200">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden border border-slate-200 bg-white shrink-0">
+                      <img
+                        src={getAdminImageUrl(image)}
+                        alt="Product Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://placehold.co/100?text=Preview+Error';
+                        }}
+                      />
+                    </div>
+                    <div className="text-xs text-slate-600 min-w-0 flex-1">
+                      <p className="font-semibold text-emerald-600 flex items-center gap-1">
+                        ✓ Image Selected
+                      </p>
+                      <p className="truncate text-[11px] font-mono text-slate-400">
+                        {image.length > 50 ? `${image.slice(0, 47)}...` : image}
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

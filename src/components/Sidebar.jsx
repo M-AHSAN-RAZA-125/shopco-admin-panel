@@ -174,13 +174,13 @@ export default function Sidebar({
           <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-800 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
               <img
-                src={currentUser?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'}
-                alt={currentUser?.name}
+                src={currentUser?.avatar || '/ahsan-raza.jpg'}
+                alt={currentUser?.name || 'M AHSAN RAZA'}
                 className="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-700"
               />
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-white truncate">{currentUser?.name}</p>
-                <p className="text-[11px] text-slate-400 truncate">{currentUser?.email}</p>
+                <p className="text-xs font-semibold text-white truncate">{currentUser?.name || 'M AHSAN RAZA'}</p>
+                <p className="text-[11px] text-slate-400 truncate">{currentUser?.email || 'admin@shopco.com'}</p>
               </div>
             </div>
             <button

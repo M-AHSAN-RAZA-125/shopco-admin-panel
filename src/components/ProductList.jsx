@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import ProductModal from './ProductModal.jsx';
+import { getAdminImageUrl } from '../api/adminApi';
 
 export default function ProductList({
   products = [],
@@ -216,7 +217,7 @@ export default function ProductList({
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={p.image || 'https://placehold.co/80'}
+                            src={getAdminImageUrl(p.image)}
                             alt={p.name}
                             className="w-12 h-12 rounded-xl object-cover border border-slate-100 shrink-0 bg-slate-100"
                             onError={(e) => {
