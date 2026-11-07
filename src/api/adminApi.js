@@ -82,7 +82,8 @@ export async function apiRequest(endpoint, options = {}) {
     });
   } catch (netErr) {
     throw new Error(
-      `Backend Server offline! Please start backend on http://localhost:5000 (run "npm start" in the backend folder).`
+      `Cannot connect to Backend API (${API_BASE_URL}). Please verify backend is deployed and MONGO_URI is set.`
+    );
     );
   }
 
